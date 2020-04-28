@@ -2,16 +2,17 @@ import Fluent
 import Vapor
 
 func routes(_ app: Application) throws {
-    app.get { req in
-        return "It works!"
-    }
+    let webController = InfectedWebController()
+    app.get(use: webController.index)
 
-    app.get("hello") { req -> String in
-        return "Hello, world!"
-    }
+    let deviceRestController = DeviceRestController(allowedAuthStrategies: [.iOSDeviceId])
+    app.post("auth", use: deviceRestController.postAuthentication)
+    app.put("auth/pushtoken", use: deviceRestController.putPushToken)
 
-    let todoController = TodoController()
-    app.get("todos", use: todoController.index)
-    app.post("todos", use: todoController.create)
-    app.delete("todos", ":todoID", use: todoController.delete)
+    let authenticatedGroup = app.grouped(DeviceAuthenticator())
+
+    let tracingKeyRestController = TracingKeyRestController()
+    authenticatedGroup.get("infected", use: tracingKeyRestController.get)
+    authenticatedGroup.post("submit", use: tracingKeyRestController.post)
+//    app.delete("submit", use: restController.delete)
 }

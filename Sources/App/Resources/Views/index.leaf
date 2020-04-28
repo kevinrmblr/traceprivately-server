@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>#(title)</title>
+        <link rel="stylesheet" href="/static/bulma.css">
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title is-1">Title 1</h1>
+                <div>
+                    <div class="columns">
+                        <div class="column">
+                            <h4 class="title is-4">Key</h4>
+                        </div>
+                        <div class="column">
+                            <h4 class="title is-4">Created</h4>
+                        </div>
+                        <div class="column">
+                            <h4 class="title is-4">Status</h4>
+                        </div>
+                    </div>
+                    #for(batch in items):
+                    <div class="columns">
+                        <div class="column">
+                            #(batch.key)
+                            <br /> Keys:
+                            #(batch.keys)
+                        </div>
+                        <div class="column">
+                            #(batch.createdAt)
+                        </div>
+                        <div class="column">
+                            #(batch.status)
+                        </div>
+                    </div>
+                    #endfor
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
