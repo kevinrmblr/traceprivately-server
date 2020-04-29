@@ -1,8 +1,6 @@
 //
-//  File.swift
-//
-//
-//  Created by K Rummler on 28/04/2020.
+//  
+//  Created by kevinrmblr
 //
 
 import Fluent

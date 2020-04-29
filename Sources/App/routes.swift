@@ -10,9 +10,17 @@ func routes(_ app: Application) throws {
     app.put("auth/pushtoken", use: deviceRestController.putPushToken)
 
     let authenticatedGroup = app.grouped(DeviceAuthenticator())
-
     let tracingKeyRestController = TracingKeyRestController()
+
     authenticatedGroup.get("infected", use: tracingKeyRestController.get)
     authenticatedGroup.post("submit", use: tracingKeyRestController.post)
-//    app.delete("submit", use: restController.delete)
 }
+
+//class ContentAcceptMiddleware: Middleware {
+//    func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+//        guard let acc = request.headers.accept else {
+//            return next.respond(to: request)
+//        }
+//        request.
+//    }
+//}

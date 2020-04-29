@@ -23,7 +23,7 @@ final class TracingKeyBatch: Model {
     var status: BatchStatus
 
     @Children(for: \.$batch)
-    var keys: [TracingKey]
+    var keys: [DailyTracingKey]
 
     @Timestamp(key: .createdAt, on: .create)
     var createdAt: Date?
