@@ -5,7 +5,6 @@ struct ModelCreateInitial: Migration {
         database.eventLoop.flatten([
             database.schema(Device.schema)
                 .id()
-                .field(.devicePlatform, .string, .required)
                 .field(.pushToken, .string)
                 .field(.token, .string, .required)
                 .field(.tokenExpirationDate, .datetime, .required)
@@ -17,21 +16,25 @@ struct ModelCreateInitial: Migration {
                 .field(.deviceId, .uuid, .required)
                 .field(.status, .string, .required)
                 .timestamps()
+                .foreignKey(.deviceId, references: Device.schema, .id)
                 .create(),
             database.schema(DailyTracingKey.schema)
                 .id()
-                .field(.tracingKeyBatchId, .uuid, .required)
                 .field(.key, .data, .required)
+                .field(.tracingKeyBatchId, .uuid, .required)
                 .field(.dayNumber, .int, .required)
+                .field(.riskLevel, .int, .required)
                 .timestamps()
+                .foreignKey(.tracingKeyBatchId, references: TracingKeyBatch.schema, .id)
                 .create(),
             database.schema(TrackingKeyBatchFormField.schema)
                 .id()
+                .field(.key, .string, .required)
                 .field(.tracingKeyBatchId, .uuid, .required)
                 .field(.fieldType, .string, .required)
-                .field(.key, .string, .required)
                 .field(.value, .string, .required)
                 .timestamps()
+                .foreignKey(.tracingKeyBatchId, references: TracingKeyBatch.schema, .id)
                 .create()
         ])
     }
@@ -39,8 +42,9 @@ struct ModelCreateInitial: Migration {
     func revert(on database: Database) -> EventLoopFuture<Void> {
         database.eventLoop.flatten([
             database.schema(Device.schema).delete(),
-            database.schema(TracingKeyBatch.schema).delete(),
-            database.schema(DailyTracingKey.schema).delete()
+            database.schema(TrackingKeyBatchFormField.schema).delete(),
+            database.schema(DailyTracingKey.schema).delete(),
+            database.schema(TracingKeyBatch.schema).delete()
         ])
     }
 }

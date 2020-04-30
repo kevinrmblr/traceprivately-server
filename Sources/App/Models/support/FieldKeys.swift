@@ -17,12 +17,12 @@ extension FieldKey {
     static var tracingKeyBatchId: Self { "tracing_key_batch_id" }
     static var dayNumber: Self { "day_number" }
     static var status: Self { "status" }
+    static var riskLevel: Self { "risk_level" }
     static var fieldType: Self { "field_type" }
     static var value: Self { "value" }
 
 
     // Device
-    static var devicePlatform: Self { "device_platform" }
     static var pushToken: Self { "push_token" }
     static var deviceId: Self { "device_id" }
 }

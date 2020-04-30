@@ -2,25 +2,24 @@ import Fluent
 import Vapor
 
 struct DeviceRestController {
-    private struct Constants {
-        static let tokenValidity = TimeInterval(60 * 60 * 24 * 7) // roughly 7 days
-    }
-
     let allowedAuthStrategies: [AuthStrategyRequestDTO]
+    let tokenValidity: TimeInterval
 
-    init(allowedAuthStrategies: [AuthStrategyRequestDTO]) {
+    init(allowedAuthStrategies: [AuthStrategyRequestDTO],
+         tokenValidity: TimeInterval = TimeInterval(60 * 60 * 24 * 7)) {
         self.allowedAuthStrategies = allowedAuthStrategies
+        self.tokenValidity = tokenValidity
     }
 
     func postAuthentication(_ req: Request) throws -> EventLoopFuture<AuthResponseDTO> {
-        guard let dto: AuthRequestDTO = try? req.content.decode(AuthRequestDTO.self),
-            allowedAuthStrategies.contains(dto.strategy),
-            dto.isValid else {
+        let requestDTO = try? req.content.decode(AuthRequestDTO.self)
+        guard allowedAuthStrategies.contains(.free) ||
+            requestDTO?.isValid(for: allowedAuthStrategies) ?? false else {
             throw Abort(.badRequest)
         }
 
-        let newDevice = Device(token: UUID().uuidString, tokenExpirationDate: Date().advanced(by: Constants.tokenValidity))
-        newDevice.platform = .ios
+        let newDevice = Device(token: UUID().uuidString,
+                               tokenExpirationDate: Date().advanced(by: tokenValidity))
 
         return newDevice.save(on: req.db).map {
             AuthResponseDTO(status: .ok, token: newDevice.token, expiresAt: newDevice.tokenExpirationDate)
@@ -33,7 +32,7 @@ struct DeviceRestController {
             throw Abort(.badRequest)
         }
 
-        switch device.platform {
+        switch dto.platform {
         case .ios: device.pushToken = PushToken.ios(token: dto.token)
         case .android: device.pushToken = PushToken.android(token: dto.token)
         }
@@ -51,13 +50,6 @@ extension DeviceRestController {
     struct AuthRequestDTO: Content {
         let strategy: AuthStrategyRequestDTO
         let token: String?
-
-        var isValid: Bool {
-            switch strategy {
-            case .free: return true
-            case .iOSDeviceId: return !(token?.isEmpty ?? true)
-            }
-        }
     }
 
     struct AuthResponseDTO: Content {
@@ -73,5 +65,30 @@ extension DeviceRestController {
 
     struct PushTokenRequestDTO: Content {
         let token: String
+        let platform: DevicePlatform
+    }
+
+    enum DevicePlatform: String, Content {
+        case ios = "IOS"
+        case android = "ANDROID"
+    }
+}
+
+private extension DeviceRestController.AuthRequestDTO {
+    func isValid(for options: [DeviceRestController.AuthStrategyRequestDTO]) -> Bool {
+        guard options.contains(strategy) else { return false }
+        switch strategy {
+        case .free: return true
+        case .iOSDeviceId: return !(token?.isEmpty ?? true)
+        }
+    }
+}
+
+private extension DeviceRestController.AuthStrategyRequestDTO {
+    var platform: DevicePlatform? {
+        switch self {
+        case .iOSDeviceId: return .ios
+        case .free: return nil
+        }
     }
 }

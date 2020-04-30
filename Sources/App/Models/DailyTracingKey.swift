@@ -16,6 +16,9 @@ final class DailyTracingKey: Model {
     @Parent(key: .tracingKeyBatchId)
     var batch: TracingKeyBatch
 
+    @Field(key: .riskLevel)
+    var riskLevel: Int
+
     @Timestamp(key: .createdAt, on: .create)
     var createdAt: Date?
 
@@ -27,10 +30,15 @@ final class DailyTracingKey: Model {
 
     init() {}
 
-    init(id: UUID? = nil, batchId: UUID, key: Data, dayNumber: Int) {
+    init(id: UUID? = nil,
+         batchId: UUID,
+         key: Data,
+         dayNumber: Int,
+         riskLevel: Int) {
         self.id = id
         self.key = key
         self.dayNumber = dayNumber
+        self.riskLevel = riskLevel
         self.$batch.id = batchId
     }
 }

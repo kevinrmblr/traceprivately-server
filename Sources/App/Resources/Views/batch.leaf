@@ -1,0 +1,50 @@
+#extend("base"):
+    #export("body"):
+        <section class="section">
+            <div class="container">
+                <h1 class="title is-1">Batch details</h1>
+
+                <figure class="highlight">
+                    <div class="field">
+                        <label class="label">Batch key:</label>
+                        <span class="tag is-light">#(key)</span>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Status:
+                            <span class="tag is-info">
+                                #(status)
+                            </span>
+                        </label>
+                        <div class="buttons has-addons">
+                            <button class="button is-small is-light">Reject</button>
+                            <button class="button is-small is-success">Approve</button>
+                        </div>
+                    </div>
+                </figure>
+
+                <h2 class="title is-2">Form fields</h1>
+                <div>
+                    <div class="columns">
+                        <div class="column">
+                            <h4 class="title is-4">Field</h4>
+                        </div>
+                        <div class="column">
+                            <h4 class="title is-4">Value</h4>
+                        </div>
+                    </div>
+                    #for(field in formFields):
+                    <div class="columns">
+                        <div class="column">
+                            #(field.key)
+                        </div>
+                        <div class="column">
+                            #(field.value)
+                        </div>
+                    </div>
+                    #endfor
+                </div>
+            </div>
+        </section>
+    #endexport
+#endextend

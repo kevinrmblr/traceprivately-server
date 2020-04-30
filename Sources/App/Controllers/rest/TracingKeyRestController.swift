@@ -15,15 +15,19 @@ struct TracingKeyRestController {
 
         guard let since: String = req.query["since"], let date = sinceFormatter.date(from: since) else {
             return newFuture.all().map { list in GetResponseDTO.ok(keys: list.map { DailyTracingKeyDTO(key: $0.key,
-                                                                                                       dayNumber: $0.dayNumber) }) }
+                                                                                                       dayNumber: $0.dayNumber,
+                                                                                                       riskLevel: $0.riskLevel) }) }
         }
 
         let deletedFuture: QueryBuilder<DailyTracingKey> = DailyTracingKey.query(on: req.db).withDeleted().filter(\.$deletedAt >= date)
 
         newFuture = newFuture.filter(\.$createdAt >= date)
         return newFuture.all().and(deletedFuture.all()).map { newList, deletedList in
-            GetResponseDTO.ok(keys: newList.map { DailyTracingKeyDTO(key: $0.key, dayNumber: $0.dayNumber) },
-                              deletedKeys: deletedList.map { DailyTracingKeyDTO(key: $0.key, dayNumber: $0.dayNumber) })
+            GetResponseDTO.ok(keys: newList.map { DailyTracingKeyDTO(key: $0.key,
+                                                                     dayNumber: $0.dayNumber,
+                                                                     riskLevel: $0.riskLevel) },
+                              deletedKeys: deletedList.map { DeletedDailyTracingKeyDTO(key: $0.key,
+                                                                                dayNumber: $0.dayNumber) })
         }
     }
 
@@ -45,7 +49,8 @@ struct TracingKeyRestController {
                 let dailyKeys = dto.keys.compactMap {
                     DailyTracingKey(batchId: batch.id!,
                                     key: $0.key,
-                                    dayNumber: $0.dayNumber).save(on: database)
+                                    dayNumber: $0.dayNumber,
+                                    riskLevel: $0.riskLevel).save(on: database)
                 }
                 let formFields = dto.form?.compactMap {
                     TrackingKeyBatchFormField(batchId: batch.id!, type: .text, key: $0.key, value: $0.value).save(on: database)
@@ -68,7 +73,7 @@ struct TracingKeyRestController {
             .filter(\.$key == batchId)
             .first().flatMap { existing in
                 if let existing = existing {
-                    return TrackingKeyBatchFormField.query(on: db).filter(\.$batch.$id == existing.id!).delete().map { existing }
+                    return existing.save(on: db).map { existing }
                 }
                 let newBatch = TracingKeyBatch(deviceId: deviceId)
                 return newBatch.save(on: db).map { newBatch }
@@ -92,9 +97,9 @@ extension TracingKeyRestController {
         let status: ReponseStatusDTO
         let date: Date
         let keys: [DailyTracingKeyDTO]
-        let deletedKeys: [DailyTracingKeyDTO]
+        let deletedKeys: [DeletedDailyTracingKeyDTO]
 
-        static func ok(keys: [DailyTracingKeyDTO], deletedKeys: [DailyTracingKeyDTO] = []) -> GetResponseDTO {
+        static func ok(keys: [DailyTracingKeyDTO], deletedKeys: [DeletedDailyTracingKeyDTO] = []) -> GetResponseDTO {
             return GetResponseDTO(status: .ok, date: Date(), keys: keys, deletedKeys: deletedKeys)
         }
 
@@ -105,6 +110,18 @@ extension TracingKeyRestController {
     }
 
     struct DailyTracingKeyDTO: Content {
+        let key: Data
+        let dayNumber: Int
+        let riskLevel: Int
+
+        enum CodingKeys: String, CodingKey {
+            case key = "d"
+            case dayNumber = "r"
+            case riskLevel = "l"
+        }
+    }
+
+    struct DeletedDailyTracingKeyDTO: Content {
         let key: Data
         let dayNumber: Int
 

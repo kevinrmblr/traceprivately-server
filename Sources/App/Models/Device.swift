@@ -7,9 +7,6 @@ final class Device: Model, Authenticatable {
     @ID(key: .id)
     var id: UUID?
 
-    @Field(key: .devicePlatform)
-    var platform: DevicePlatform
-
     @Field(key: .token)
     var token: String
 

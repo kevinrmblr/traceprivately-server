@@ -25,6 +25,9 @@ final class TracingKeyBatch: Model {
     @Children(for: \.$batch)
     var keys: [DailyTracingKey]
 
+    @Children(for: \.$batch)
+    var formFields: [TrackingKeyBatchFormField]
+
     @Timestamp(key: .createdAt, on: .create)
     var createdAt: Date?
 
@@ -36,13 +39,16 @@ final class TracingKeyBatch: Model {
 
     init() {}
 
-    init(id: UUID? = nil, deviceId: UUID, key: UUID = UUID.generateRandom(), status: BatchStatus = .pending) {
+    init(id: UUID? = nil,
+         deviceId: UUID,
+         key: UUID = UUID.generateRandom(),
+         status: BatchStatus = .pending) {
         self.id = id
         self.key = key
         self.status = status
-        self.$device.id = deviceId
+        $device.id = deviceId
     }
 
     /// Workaround for: https://github.com/vapor/leaf-kit/issues/23
-    var keyDump: String { keys.reduce("", { "\($0), \($1)" }) }
+    var keyDump: String { keys.reduce("") { "\($0), \($1)" } }
 }
