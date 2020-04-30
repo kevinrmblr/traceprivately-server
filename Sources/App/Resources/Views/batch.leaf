@@ -12,14 +12,22 @@
 
                     <div class="field">
                         <label class="label">Status:
-                            <span class="tag is-info">
+                                #if(status == "pending"):
+                                    <span class="tag is-info">
+                                #elseif(status == "confirmed"):
+                                    <span class="tag is-success">
+                                #else:
+                                    <span class="tag is-danger">
+                                #endif
                                 #(status)
                             </span>
                         </label>
+                        #if(status == "pending"):
                         <div class="buttons has-addons">
-                            <button class="button is-small is-light">Reject</button>
-                            <button class="button is-small is-success">Approve</button>
+                            <a href="/batch/#(key)/status/reject" class="button is-small is-danger">Reject</a>
+                            <a href="/batch/#(key)/status/confirm" class="button is-small is-success">Confirm</a>
                         </div>
+                        #endif
                     </div>
                 </figure>
 

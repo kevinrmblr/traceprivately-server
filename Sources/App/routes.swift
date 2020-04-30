@@ -5,6 +5,8 @@ func routes(_ app: Application) throws {
     let webController = TracingKeyBatchesWebController()
     app.get(use: webController.index)
     app.get("batch", ":key", use: webController.batchDetails)
+    app.get("batch", ":key", "status", "confirm", use: webController.confirm)
+    app.get("batch", ":key", "status", "reject", use: webController.reject)
 
     let restGroup = app.grouped("api")
 
