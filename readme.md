@@ -49,6 +49,10 @@ To run the app, you can use:
 - To allow connecting to localhost without ssl, don't forget to *Allow Arbitrary Loads* in the `Info.plist`.
 - Run the app
 
+### Validating data
+
+There's are some simple Leaf pages available to see the data results. Simply point your browser to `http://localhost:8080/` to see collected results.
+
 ## Contributing
 
 Feel free to open issues or pull requests! 
