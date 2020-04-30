@@ -12,9 +12,7 @@ This project is meant to be usable in combination with [TracePrivately](TracePri
 ### Main features
 
 - [x] Support for JSON and MessagePack
--  Basic webinterface to:
- - [x] See data input
- - [x] Reject/approve data input
+- [x] Basic webinterface toSee and reject/approve data input
 - [ ] Optional authentication support, as privately as possible
 - [ ] Push message support
 
