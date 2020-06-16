@@ -24,7 +24,15 @@
                             #(batch.createdAt)
                         </div>
                         <div class="column">
-                            #(batch.status)
+                            #if(batch.status == "pending"):
+                            <span class="tag is-info">
+                            #elseif(batch.status == "confirmed"):
+                            <span class="tag is-success">
+                            #else:
+                            <span class="tag is-danger">
+                            #endif
+                                #(batch.status)
+                            </span>
                         </div>
                     </div>
                     #endfor
