@@ -37,7 +37,10 @@ To run the app, you can use:
 ### Running using XCode
 
 - Open the project in Xcode
-- Under Edit scheme -> Run -> Working Directory, point to `[RepoDirectory]/WorkingDir`
+- Under Edit scheme -> Run -> Arguments, add these two arguments:
+ - `--auto-migrate` (To set up the data model on startup)
+ - `serve --hostname 0.0.0.0 --port 8080` (To enable the app to listen for incoming connections)
+- Under Edit scheme -> Run -> Options -> Working Directory, point to `[RepoDirectory]/WorkingDir`
  - Without this step, the application will work, but the webppages will not be able to find the leaf templates
 - Start the application
 
